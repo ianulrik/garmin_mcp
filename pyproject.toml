@@ -1,0 +1,21 @@
+[project]
+name = "garmin-mcp"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+authors = [
+    { name = "ianulrik", email = "ianulrik03@gmail.com" }
+]
+requires-python = ">=3.14"
+dependencies = [
+    "fastmcp>=4.0.3",
+    "garminconnect>=0.3.15",
+    "garth>=0.8.0",
+]
+
+[project.scripts]
+garmin-mcp = "garmin_mcp:main"
+
+[build-system]
+requires = ["uv_build>=0.12.13,<0.13.0"]
+build-backend = "uv_build"
