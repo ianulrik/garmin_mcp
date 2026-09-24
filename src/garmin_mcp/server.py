@@ -3,7 +3,7 @@ import sys
 from fastmcp import FastMCP
 
 from garmin_mcp import client as garmin_client
-from garmin_mcp.tools import activities, demo, health, training
+from garmin_mcp.tools import activities, demo, health, overview, training
 
 # All logging/debug-utskrift MÅ gå til stderr, aldri stdout.
 # stdio-transporten bruker stdout som binær meldingskanal mellom Claude
@@ -19,6 +19,7 @@ demo.register(mcp, client)
 activities.register(mcp, client)
 health.register(mcp, client)
 training.register(mcp, client)
+overview.register(mcp, client)
 
 
 if __name__ == "__main__":

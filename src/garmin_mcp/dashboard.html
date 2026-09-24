@@ -1,0 +1,560 @@
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Form og belastning</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600&family=Source+Sans+3:wght@400;600&display=swap">
+<style>
+:root {
+  color-scheme: light;
+  --bg: #eef2f0;
+  --surface: #fbfcfb;
+  --ink: #101714;
+  --ink-2: #47524d;
+  --muted: #6c7772;
+  --line: #d9e0dc;
+  --grid: #e6ebe8;
+  --mono: #2f4a5c;
+  --band: rgba(47, 74, 92, 0.12);
+  --s-lop: #2a78d6;
+  --s-sykkel: #eb6834;
+  --s-styrke: #1baf7a;
+  --s-svomming: #eda100;
+  --s-annet: #8a918d;
+  --good: #0ca30c;
+  --warning: #fab219;
+  --serious: #ec835a;
+  --critical: #d03b3b;
+  --display: "Barlow Condensed", "Arial Narrow", "Roboto Condensed", sans-serif;
+  --body: "Source Sans 3", "Segoe UI", system-ui, -apple-system, sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --bg: #0e1211;
+    --surface: #161b19;
+    --ink: #eef2f0;
+    --ink-2: #b4beb9;
+    --muted: #8b958f;
+    --line: #2a322e;
+    --grid: #212825;
+    --mono: #9fbccd;
+    --band: rgba(159, 188, 205, 0.14);
+    --s-lop: #3987e5;
+    --s-sykkel: #d95926;
+    --s-styrke: #199e70;
+    --s-svomming: #c98500;
+    --s-annet: #7d8580;
+  }
+}
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --bg: #0e1211;
+  --surface: #161b19;
+  --ink: #eef2f0;
+  --ink-2: #b4beb9;
+  --muted: #8b958f;
+  --line: #2a322e;
+  --grid: #212825;
+  --mono: #9fbccd;
+  --band: rgba(159, 188, 205, 0.14);
+  --s-lop: #3987e5;
+  --s-sykkel: #d95926;
+  --s-styrke: #199e70;
+  --s-svomming: #c98500;
+  --s-annet: #7d8580;
+}
+
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font: 15px/1.5 var(--body);
+  padding-inline: 16px;
+  padding-block: 24px 48px;
+}
+.wrap { max-width: 1120px; margin: 0 auto; display: grid; gap: 20px; }
+
+header { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 4px 24px; }
+h1 {
+  font: 600 clamp(30px, 5vw, 44px)/1 var(--display);
+  letter-spacing: 0.01em;
+  margin: 0;
+  text-wrap: balance;
+}
+.period { color: var(--muted); font-size: 14px; font-variant-numeric: tabular-nums; }
+
+.tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 12px; }
+.tile {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 14px 16px 16px;
+  display: grid;
+  gap: 4px;
+  align-content: start;
+}
+.label {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.big { font: 600 36px/1.05 var(--display); font-variant-numeric: tabular-nums; }
+.big small { font-size: 18px; color: var(--ink-2); font-weight: 500; margin-left: 4px; }
+.sub { color: var(--ink-2); font-size: 14px; }
+.chip {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-size: 13px; font-weight: 600; color: var(--ink);
+  border: 1px solid var(--line); border-radius: 999px;
+  padding: 1px 10px 1px 8px; width: fit-content;
+}
+.chip i { width: 8px; height: 8px; border-radius: 50%; background: var(--c, var(--muted)); flex: none; }
+
+.grid2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 440px), 1fr)); gap: 20px; }
+section.card {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 16px 18px 14px;
+  display: grid;
+  gap: 8px;
+  min-width: 0;
+}
+h2 { font: 600 22px/1.1 var(--display); letter-spacing: 0.01em; margin: 0; }
+.head { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 4px 16px; }
+.note { color: var(--muted); font-size: 13px; }
+.legend { display: flex; flex-wrap: wrap; gap: 4px 14px; font-size: 13px; color: var(--ink-2); }
+.legend span { display: inline-flex; align-items: center; gap: 6px; }
+.legend i { width: 10px; height: 10px; border-radius: 3px; background: var(--c); }
+.legend i.band { background: var(--band); outline: 1px dashed var(--muted); outline-offset: -1px; }
+
+.chart { position: relative; width: 100%; }
+.chart svg { display: block; width: 100%; overflow: visible; }
+.chart text { fill: var(--muted); font: 12px var(--body); font-variant-numeric: tabular-nums; }
+.chart .gridline { stroke: var(--grid); stroke-width: 1; }
+.chart .baseline { stroke: var(--line); stroke-width: 1; }
+.chart .cross { stroke: var(--muted); stroke-width: 1; stroke-dasharray: 3 3; }
+.tip {
+  position: absolute; pointer-events: none; z-index: 2;
+  background: var(--surface); color: var(--ink);
+  border: 1px solid var(--line); border-radius: 8px;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.12);
+  padding: 8px 10px; font-size: 13px; line-height: 1.4;
+  min-width: 140px; font-variant-numeric: tabular-nums;
+}
+.tip b { display: block; font-weight: 600; margin-bottom: 2px; }
+.tip .row { display: flex; justify-content: space-between; gap: 14px; color: var(--ink-2); }
+.tip .row span:last-child { color: var(--ink); }
+.tip i { display: inline-block; width: 8px; height: 8px; border-radius: 2px; margin-right: 6px; background: var(--c); }
+
+.balance { display: grid; gap: 14px; padding-top: 4px; }
+.bal-row { display: grid; grid-template-columns: 120px 1fr 56px; gap: 12px; align-items: center; }
+.bal-row .name { font-size: 14px; color: var(--ink-2); }
+.bal-row .val { font: 600 20px/1 var(--display); text-align: right; font-variant-numeric: tabular-nums; }
+.track { position: relative; height: 14px; }
+.track .target { position: absolute; top: 0; bottom: 0; background: var(--band); border: 1px dashed var(--muted); border-radius: 3px; }
+.track .fill { position: absolute; left: 0; top: 3px; height: 8px; background: var(--mono); border-radius: 0 4px 4px 0; }
+
+.table-wrap { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; font-size: 14px; font-variant-numeric: tabular-nums; }
+th, td { text-align: left; padding: 7px 10px; border-bottom: 1px solid var(--grid); white-space: nowrap; }
+th { font-size: 12px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); }
+td.num, th.num { text-align: right; }
+td .dot { display: inline-block; width: 8px; height: 8px; border-radius: 2px; background: var(--c); margin-right: 8px; }
+td.name { white-space: normal; min-width: 160px; }
+details summary { cursor: pointer; color: var(--ink-2); font-size: 13px; width: fit-content; }
+details summary:focus-visible, button:focus-visible { outline: 2px solid var(--mono); outline-offset: 2px; border-radius: 4px; }
+footer { color: var(--muted); font-size: 13px; }
+footer code { font-size: 12px; }
+
+@media (max-width: 520px) {
+  .bal-row { grid-template-columns: 96px 1fr 48px; gap: 8px; }
+  .big { font-size: 32px; }
+}
+</style>
+
+<div class="wrap">
+  <header>
+    <h1>Form og belastning</h1>
+    <div class="period" id="period"></div>
+  </header>
+
+  <div class="tiles" id="tiles"></div>
+
+  <section class="card">
+    <div class="head">
+      <h2>Ukesvolum</h2>
+      <span class="note">Timer per uke, fordelt på sport</span>
+    </div>
+    <div class="legend" id="sport-legend"></div>
+    <div class="chart" id="c-weeks"></div>
+    <details>
+      <summary>Vis som tabell</summary>
+      <div class="table-wrap"><table id="t-weeks"></table></div>
+    </details>
+  </section>
+
+  <div class="grid2">
+    <section class="card">
+      <div class="head"><h2>HRV om natten</h2><span class="note">ms, snitt per natt</span></div>
+      <div class="legend">
+        <span><i style="--c: var(--mono)"></i>HRV</span>
+        <span><i class="band"></i>Balansert område</span>
+      </div>
+      <div class="chart" id="c-hrv"></div>
+    </section>
+    <section class="card">
+      <div class="head"><h2>Hvilepuls</h2><span class="note">slag/min</span></div>
+      <div class="chart" id="c-rhr"></div>
+    </section>
+    <section class="card">
+      <div class="head"><h2>Søvn</h2><span class="note">timer per natt, stiplet linje = 8 t</span></div>
+      <div class="chart" id="c-sleep"></div>
+    </section>
+    <section class="card">
+      <div class="head"><h2>Daglig treningsbelastning</h2><span class="note">sum av øktene hver dag</span></div>
+      <div class="chart" id="c-load"></div>
+    </section>
+  </div>
+
+  <section class="card">
+    <div class="head">
+      <h2>Belastningsbalanse, siste 4 uker</h2>
+      <span class="note" id="bal-verdict"></span>
+    </div>
+    <div class="legend">
+      <span><i style="--c: var(--mono)"></i>Din belastning</span>
+      <span><i class="band"></i>Garmins målområde</span>
+    </div>
+    <div class="balance" id="balance"></div>
+  </section>
+
+  <section class="card">
+    <div class="head"><h2>Økter</h2><span class="note" id="n-sessions"></span></div>
+    <div class="table-wrap"><table id="t-sessions"></table></div>
+  </section>
+
+  <footer id="footer"></footer>
+</div>
+
+<script>
+const DATA = /*__GARMIN_DATA__*/null;
+
+const SPORTS = [
+  ["lop", "Løping"], ["sykkel", "Sykkel"], ["styrke", "Styrke"], ["svomming", "Svømming"], ["annet", "Annet"],
+];
+const SPORT_NAME = Object.fromEntries(SPORTS);
+const MONTHS = ["jan", "feb", "mar", "apr", "mai", "jun", "jul", "aug", "sep", "okt", "nov", "des"];
+const WEEKDAYS = ["søn", "man", "tir", "ons", "tor", "fre", "lør"];
+const NS = "http://www.w3.org/2000/svg";
+
+const $ = (id) => document.getElementById(id);
+const esc = (s) => String(s ?? "").replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]);
+const parseDay = (iso) => new Date(iso.slice(0, 10) + "T12:00:00");
+const fmtDay = (iso) => { const d = parseDay(iso); return `${d.getDate()}. ${MONTHS[d.getMonth()]}`; };
+const fmtDayLong = (iso) => { const d = parseDay(iso); return `${WEEKDAYS[d.getDay()]} ${d.getDate()}. ${MONTHS[d.getMonth()]}`; };
+const num = (v, digits = 0) => v == null ? "–" : Number(v).toLocaleString("nb-NO", { minimumFractionDigits: digits, maximumFractionDigits: digits });
+const hm = (minutes) => { const m = Math.round(minutes || 0); return m < 60 ? `${m} min` : `${Math.floor(m / 60)} t ${String(m % 60).padStart(2, "0")}`; };
+const sportVar = (s) => `var(--s-${s})`;
+
+function el(tag, attrs = {}, parent) {
+  const node = document.createElementNS(NS, tag);
+  for (const [k, v] of Object.entries(attrs)) node.setAttribute(k, v);
+  if (parent) parent.appendChild(node);
+  return node;
+}
+
+function niceMax(v) {
+  if (v <= 0) return 1;
+  const p = Math.pow(10, Math.floor(Math.log10(v)));
+  const n = v / p;
+  return (n <= 1 ? 1 : n <= 2 ? 2 : n <= 2.5 ? 2.5 : n <= 5 ? 5 : 10) * p;
+}
+
+function ticks(min, max, count = 4) {
+  const step = niceMax((max - min) / count);
+  const out = [];
+  for (let v = Math.ceil(min / step) * step; v <= max + 1e-9; v += step) out.push(+v.toFixed(6));
+  return out;
+}
+
+/* ---------- Status-fliser ---------- */
+const READINESS = {
+  PRIME: ["Topp", "--good"], HIGH: ["Høy", "--good"], MODERATE: ["Moderat", "--warning"],
+  LOW: ["Lav", "--serious"], POOR: ["Svært lav", "--critical"],
+};
+const ACWR = {
+  LOW: ["Lav", "--warning"], OPTIMAL: ["Optimal", "--good"], HIGH: ["Høy", "--serious"], VERY_HIGH: ["Svært høy", "--critical"],
+};
+function chip([text, color]) { return `<span class="chip"><i style="--c: var(${color})"></i>${esc(text)}</span>`; }
+
+function renderTiles() {
+  const s = DATA.status;
+  const last7 = DATA.dager.slice(-7);
+  const avg = (arr) => { const v = arr.filter((x) => x != null); return v.length ? v.reduce((a, b) => a + b, 0) / v.length : null; };
+  const readiness = READINESS[s.beredskap_niva];
+  const acwr = ACWR[s.belastning_status];
+  const tiles = [
+    `<div class="label">Treningsstatus</div>
+     <div class="big">${esc(s.treningsstatus ?? "–")}</div>
+     <div class="sub">${s.status_siden ? "siden " + fmtDay(s.status_siden) : ""}${s.vo2max ? ` · VO2max ${num(s.vo2max, 1)}` : ""}</div>`,
+    `<div class="label">Treningsberedskap i dag</div>
+     <div class="big">${num(s.beredskap_score)}<small>/ 100</small></div>
+     ${readiness ? chip(readiness) : ""}
+     <div class="sub">${s.restitusjonstid_timer != null ? `Restitusjon: ${num(s.restitusjonstid_timer)} t igjen` : ""}</div>`,
+    `<div class="label">Akutt / kronisk belastning</div>
+     <div class="big">${num(s.akutt_belastning)}<small>/ ${num(s.kronisk_belastning)}</small></div>
+     ${acwr ? chip([`${acwr[0]} · forhold ${num(s.belastningsforhold, 1)}`, acwr[1]]) : ""}
+     <div class="sub">${s.kronisk_optimal_min != null ? `Optimal akutt: ${num(s.kronisk_optimal_min)}–${num(s.kronisk_optimal_maks)}` : ""}</div>`,
+    `<div class="label">Snitt siste 7 netter</div>
+     <div class="big">${num(avg(last7.map((d) => d.hrv_ms)))}<small>ms HRV</small></div>
+     <div class="sub">${num(avg(last7.map((d) => d.sovn_timer)), 1)} t søvn · hvilepuls ${num(avg(last7.map((d) => d.hvilepuls)))}</div>`,
+  ];
+  $("tiles").innerHTML = tiles.map((t) => `<div class="tile">${t}</div>`).join("");
+}
+
+/* ---------- Tooltip ---------- */
+function makeTip(container) {
+  const tip = document.createElement("div");
+  tip.className = "tip";
+  tip.hidden = true;
+  container.appendChild(tip);
+  return {
+    show(html, x, y) {
+      tip.innerHTML = html;
+      tip.hidden = false;
+      const cw = container.clientWidth, tw = tip.offsetWidth;
+      let left = x + 14;
+      if (left + tw > cw) left = x - tw - 14;
+      tip.style.left = Math.max(0, left) + "px";
+      tip.style.top = Math.max(0, y - tip.offsetHeight / 2) + "px";
+    },
+    hide() { tip.hidden = true; },
+  };
+}
+const row = (label, value, color) => `<div class="row"><span>${color ? `<i style="--c:${color}"></i>` : ""}${esc(label)}</span><span>${value}</span></div>`;
+
+/* ---------- Ukesvolum: stablede søyler ---------- */
+function renderWeeks() {
+  const box = $("c-weeks");
+  box.innerHTML = "";
+  const weeks = DATA.uker;
+  const W = box.clientWidth || 600, H = 240;
+  const m = { t: 10, r: 8, b: 40, l: 34 };
+  const iw = W - m.l - m.r, ih = H - m.t - m.b;
+  const hours = weeks.map((w) => w.minutter / 60);
+  const yMax = niceMax(Math.max(...hours, 1));
+  const y = (v) => m.t + ih - (v / yMax) * ih;
+  const svg = el("svg", { viewBox: `0 0 ${W} ${H}`, height: H, role: "img", "aria-label": "Treningstimer per uke fordelt på sport" }, box);
+
+  for (const t of ticks(0, yMax)) {
+    el("line", { x1: m.l, x2: W - m.r, y1: y(t), y2: y(t), class: t === 0 ? "baseline" : "gridline" }, svg);
+    el("text", { x: m.l - 8, y: y(t) + 4, "text-anchor": "end" }, svg).textContent = t + " t";
+  }
+
+  const slot = iw / weeks.length;
+  const bw = Math.min(56, slot * 0.62);
+  const tip = makeTip(box);
+  const firstDay = DATA.fra, lastDay = DATA.til;
+
+  weeks.forEach((w, i) => {
+    const cx = m.l + slot * (i + 0.5);
+    const x = cx - bw / 2;
+    const parts = SPORTS.map(([k]) => [k, (w.minutter_per_sport[k] || 0) / 60]).filter(([, v]) => v > 0);
+    let acc = 0;
+    parts.forEach(([k, v], j) => {
+      const top = y(acc + v), bottom = y(acc);
+      const gap = j > 0 ? 2 : 0; // 2px gap mellom segmentene
+      const h = Math.max(0, bottom - top - gap);
+      const isTop = j === parts.length - 1;
+      const r = isTop ? Math.min(4, h, bw / 2) : 0;
+      const path = `M${x},${bottom - gap} V${top + r} ${r ? `Q${x},${top} ${x + r},${top}` : ""} H${x + bw - r} ${r ? `Q${x + bw},${top} ${x + bw},${top + r}` : ""} V${bottom - gap} Z`;
+      el("path", { d: path, fill: sportVar(k) }, svg);
+      acc += v;
+    });
+
+    const weekEnd = new Date(parseDay(w.uke_start).getTime() + 6 * 864e5).toISOString().slice(0, 10);
+    const partial = w.uke_start < firstDay || weekEnd > lastDay;
+    el("text", { x: cx, y: H - m.b + 18, "text-anchor": "middle" }, svg).textContent = "Uke " + w.uke_nr;
+    el("text", { x: cx, y: H - m.b + 33, "text-anchor": "middle" }, svg).textContent = partial ? "delvis" : hm(w.minutter);
+
+    const hit = el("rect", { x: m.l + slot * i, y: m.t, width: slot, height: ih, fill: "transparent" }, svg);
+    const html = `<b>Uke ${w.uke_nr} · ${fmtDay(w.uke_start)}${partial ? " (delvis)" : ""}</b>` +
+      SPORTS.filter(([k]) => w.minutter_per_sport[k]).reverse().map(([k, n]) => row(n, hm(w.minutter_per_sport[k]), sportVar(k))).join("") +
+      row("Totalt", hm(w.minutter)) + row("Økter", w.okter) + row("Distanse", num(w.distanse_km, 1) + " km") + row("Belastning", num(w.treningsbelastning));
+    hit.addEventListener("pointermove", (e) => { const r = box.getBoundingClientRect(); tip.show(html, e.clientX - r.left, e.clientY - r.top); });
+    hit.addEventListener("pointerleave", () => tip.hide());
+  });
+}
+
+function renderWeekTable() {
+  const used = SPORTS.filter(([k]) => DATA.uker.some((w) => w.minutter_per_sport[k]));
+  $("t-weeks").innerHTML =
+    `<thead><tr><th>Uke</th>${used.map(([, n]) => `<th class="num">${n}</th>`).join("")}<th class="num">Totalt</th><th class="num">Økter</th><th class="num">Km</th><th class="num">Belastning</th></tr></thead><tbody>` +
+    DATA.uker.map((w) => `<tr><td>Uke ${w.uke_nr}</td>${used.map(([k]) => `<td class="num">${w.minutter_per_sport[k] ? hm(w.minutter_per_sport[k]) : "–"}</td>`).join("")}<td class="num">${hm(w.minutter)}</td><td class="num">${w.okter}</td><td class="num">${num(w.distanse_km, 1)}</td><td class="num">${num(w.treningsbelastning)}</td></tr>`).join("") +
+    "</tbody>";
+  $("sport-legend").innerHTML = used.map(([k, n]) => `<span><i style="--c:${sportVar(k)}"></i>${n}</span>`).join("");
+}
+
+/* ---------- Daglige serier: linje eller søyle, med trådkors ---------- */
+function dailyChart(id, opts) {
+  const box = $(id);
+  box.innerHTML = "";
+  const days = DATA.dager;
+  const W = box.clientWidth || 440, H = 190;
+  const m = { t: 10, r: 10, b: 24, l: 34 };
+  const iw = W - m.l - m.r, ih = H - m.t - m.b;
+  const vals = days.map(opts.value);
+  const extra = [...(opts.band ? days.flatMap((d) => opts.band(d)) : []), ...(opts.refLine != null ? [opts.refLine] : [])];
+  const present = [...vals, ...extra].filter((v) => v != null);
+  if (!present.length) { box.innerHTML = `<p class="note">Ingen data i perioden.</p>`; return; }
+
+  let lo = opts.zero ? 0 : Math.min(...present), hi = Math.max(...present);
+  if (!opts.zero) { const pad = Math.max(2, (hi - lo) * 0.15); lo = Math.floor(lo - pad); hi = Math.ceil(hi + pad); }
+  const tk = ticks(lo, hi);
+  if (!opts.zero) { lo = Math.min(lo, tk[0]); }
+  hi = Math.max(hi, tk[tk.length - 1]);
+  const y = (v) => m.t + ih - ((v - lo) / (hi - lo)) * ih;
+  const slot = iw / days.length;
+  const xc = (i) => m.l + slot * (i + 0.5);
+
+  const svg = el("svg", { viewBox: `0 0 ${W} ${H}`, height: H, role: "img", "aria-label": opts.label }, box);
+  for (const t of ticks(lo, hi)) {
+    el("line", { x1: m.l, x2: W - m.r, y1: y(t), y2: y(t), class: opts.zero && t === 0 ? "baseline" : "gridline" }, svg);
+    el("text", { x: m.l - 8, y: y(t) + 4, "text-anchor": "end" }, svg).textContent = num(t, t % 1 ? 1 : 0);
+  }
+  const labelEvery = Math.ceil(days.length / Math.max(2, Math.floor(iw / 70)));
+  days.forEach((d, i) => {
+    if ((days.length - 1 - i) % labelEvery === 0) el("text", { x: xc(i), y: H - 6, "text-anchor": "middle" }, svg).textContent = fmtDay(d.dato);
+  });
+
+  if (opts.band) {
+    const pts = days.map((d, i) => [i, ...opts.band(d)]).filter(([, a, b]) => a != null && b != null);
+    if (pts.length) {
+      const top = pts.map(([i, , b]) => `${xc(i)},${y(b)}`).join(" L");
+      const bot = pts.slice().reverse().map(([i, a]) => `${xc(i)},${y(a)}`).join(" L");
+      el("path", { d: `M${top} L${bot} Z`, fill: "var(--band)" }, svg);
+    }
+  }
+  if (opts.refLine != null) {
+    el("line", { x1: m.l, x2: W - m.r, y1: y(opts.refLine), y2: y(opts.refLine), stroke: "var(--muted)", "stroke-dasharray": "4 4", "stroke-width": 1 }, svg);
+  }
+
+  if (opts.type === "bar") {
+    const bw = Math.max(2, slot - 2);
+    vals.forEach((v, i) => {
+      if (!v) return;
+      const top = y(v), base = y(opts.zero ? 0 : lo);
+      const r = Math.min(3, bw / 2, base - top);
+      const x = xc(i) - bw / 2;
+      el("path", { d: `M${x},${base} V${top + r} Q${x},${top} ${x + r},${top} H${x + bw - r} Q${x + bw},${top} ${x + bw},${top + r} V${base} Z`, fill: "var(--mono)" }, svg);
+    });
+  } else {
+    let d = "", pen = false;
+    vals.forEach((v, i) => {
+      if (v == null) { pen = false; return; }
+      d += `${pen ? "L" : "M"}${xc(i)},${y(v)} `;
+      pen = true;
+    });
+    el("path", { d, fill: "none", stroke: "var(--mono)", "stroke-width": 2, "stroke-linejoin": "round", "stroke-linecap": "round" }, svg);
+    const lastI = vals.map((v, i) => (v != null ? i : -1)).filter((i) => i >= 0).pop();
+    el("circle", { cx: xc(lastI), cy: y(vals[lastI]), r: 4.5, fill: "var(--mono)", stroke: "var(--surface)", "stroke-width": 2 }, svg);
+    el("text", { x: xc(lastI) - 8, y: y(vals[lastI]) - 10, "text-anchor": "end", style: "fill: var(--ink); font-weight: 600" }, svg).textContent = num(vals[lastI], opts.digits || 0);
+  }
+
+  const cross = el("line", { y1: m.t, y2: m.t + ih, class: "cross", visibility: "hidden" }, svg);
+  const dot = el("circle", { r: 4.5, fill: "var(--mono)", stroke: "var(--surface)", "stroke-width": 2, visibility: "hidden" }, svg);
+  const hit = el("rect", { x: m.l, y: m.t, width: iw, height: ih, fill: "transparent" }, svg);
+  const tip = makeTip(box);
+  hit.addEventListener("pointermove", (e) => {
+    const r = box.getBoundingClientRect();
+    const px = (e.clientX - r.left) * (W / r.width);
+    const i = Math.max(0, Math.min(days.length - 1, Math.floor((px - m.l) / slot)));
+    cross.setAttribute("x1", xc(i)); cross.setAttribute("x2", xc(i)); cross.setAttribute("visibility", "visible");
+    if (vals[i] != null && opts.type !== "bar") { dot.setAttribute("cx", xc(i)); dot.setAttribute("cy", y(vals[i])); dot.setAttribute("visibility", "visible"); }
+    else dot.setAttribute("visibility", "hidden");
+    tip.show(`<b>${fmtDayLong(days[i].dato)}</b>${opts.tip(days[i])}`, xc(i) * (r.width / W), e.clientY - r.top);
+  });
+  hit.addEventListener("pointerleave", () => { tip.hide(); cross.setAttribute("visibility", "hidden"); dot.setAttribute("visibility", "hidden"); });
+}
+
+const HRV_STATUS = { BALANCED: "Balansert", UNBALANCED: "Ubalansert", LOW: "Lav", POOR: "Svært lav" };
+
+function renderDaily() {
+  dailyChart("c-hrv", {
+    label: "HRV per natt med balansert område", value: (d) => d.hrv_ms, band: (d) => [d.hrv_baseline_lav, d.hrv_baseline_hoy],
+    tip: (d) => row("HRV", d.hrv_ms != null ? d.hrv_ms + " ms" : "–") + row("Balansert", d.hrv_baseline_lav != null ? `${d.hrv_baseline_lav}–${d.hrv_baseline_hoy} ms` : "–") + row("Status", HRV_STATUS[d.hrv_status] || d.hrv_status || "–"),
+  });
+  dailyChart("c-rhr", {
+    label: "Hvilepuls per dag", value: (d) => d.hvilepuls,
+    tip: (d) => row("Hvilepuls", d.hvilepuls != null ? d.hvilepuls + " slag/min" : "–"),
+  });
+  dailyChart("c-sleep", {
+    label: "Søvn i timer per natt", type: "bar", zero: true, value: (d) => d.sovn_timer, refLine: 8,
+    tip: (d) => row("Søvn", d.sovn_timer != null ? hm(d.sovn_timer * 60) : "–") + row("Søvnscore", num(d.sovn_score)),
+  });
+  dailyChart("c-load", {
+    label: "Treningsbelastning per dag", type: "bar", zero: true, value: (d) => d.treningsbelastning,
+    tip: (d) => {
+      const sessions = DATA.okter.filter((a) => a.dato.slice(0, 10) === d.dato);
+      return row("Belastning", num(d.treningsbelastning)) + sessions.map((a) => row(a.navn, num(a.treningsbelastning), sportVar(a.sport))).join("");
+    },
+  });
+}
+
+/* ---------- Belastningsbalanse ---------- */
+function renderBalance() {
+  const b = DATA.status.belastningsbalanse;
+  $("bal-verdict").textContent = b.vurdering || "";
+  const rows = [["Lav aerob", b.aerob_lav], ["Høy aerob", b.aerob_hoy], ["Anaerob", b.anaerob]];
+  const max = niceMax(Math.max(...rows.flatMap(([, r]) => [r.belastning || 0, r.mal_maks || 0])) * 1.05);
+  const pct = (v) => (100 * (v || 0) / max).toFixed(2) + "%";
+  $("balance").innerHTML = rows.map(([name, r]) => {
+    const state = r.belastning == null || r.mal_min == null ? "" : r.belastning < r.mal_min ? "under målområdet" : r.belastning > r.mal_maks ? "over målområdet" : "innenfor målområdet";
+    return `<div class="bal-row" title="${name}: ${num(r.belastning)} (mål ${num(r.mal_min)}–${num(r.mal_maks)}), ${state}">
+      <span class="name">${name}<br><span class="note">${num(r.mal_min)}–${num(r.mal_maks)} · ${state}</span></span>
+      <div class="track">
+        ${r.mal_min != null ? `<div class="target" style="left:${pct(r.mal_min)}; width:calc(${pct(r.mal_maks)} - ${pct(r.mal_min)})"></div>` : ""}
+        <div class="fill" style="width:${pct(r.belastning)}"></div>
+      </div>
+      <span class="val">${num(r.belastning)}</span>
+    </div>`;
+  }).join("");
+}
+
+/* ---------- Øktliste ---------- */
+function renderSessions() {
+  const s = DATA.okter;
+  $("n-sessions").textContent = `${s.length} økter · ${hm(s.reduce((a, x) => a + x.varighet_min, 0))} totalt`;
+  $("t-sessions").innerHTML =
+    `<thead><tr><th>Dato</th><th>Økt</th><th class="num">Tid</th><th class="num">Km</th><th class="num">Snittpuls</th><th class="num">Belastning</th><th class="num">TE aerob / anaerob</th></tr></thead><tbody>` +
+    s.map((a) => `<tr>
+      <td>${fmtDayLong(a.dato)}</td>
+      <td class="name"><span class="dot" style="--c:${sportVar(a.sport)}"></span>${esc(a.navn)} <span class="note">· ${SPORT_NAME[a.sport]}</span></td>
+      <td class="num">${hm(a.varighet_min)}</td>
+      <td class="num">${a.distanse_km != null ? num(a.distanse_km, a.sport === "svomming" ? 2 : 1) : "–"}</td>
+      <td class="num">${num(a.snitt_puls)}</td>
+      <td class="num">${num(a.treningsbelastning)}</td>
+      <td class="num">${num(a.aerob_te, 1)} / ${num(a.anaerob_te, 1)}</td>
+    </tr>`).join("") + "</tbody>";
+}
+
+function renderCharts() { renderWeeks(); renderDaily(); }
+
+function init() {
+  if (!DATA) { document.querySelector(".wrap").innerHTML = "<p>Ingen data. Lag dashboardet med <code>uv run python -m garmin_mcp.dashboard</code>.</p>"; return; }
+  $("period").textContent = `${fmtDay(DATA.fra)} – ${fmtDay(DATA.til)} ${DATA.til.slice(0, 4)}`;
+  $("footer").innerHTML = `Hentet fra Garmin Connect ${fmtDay(DATA.generert)} kl. ${DATA.generert.slice(11, 16)}. Oppdater med <code>uv run python -m garmin_mcp.dashboard</code> eller be Claude kjøre <code>create_training_dashboard</code>.`;
+  renderTiles();
+  renderWeekTable();
+  renderBalance();
+  renderSessions();
+  renderCharts();
+  let raf;
+  window.addEventListener("resize", () => { cancelAnimationFrame(raf); raf = requestAnimationFrame(renderCharts); });
+}
+init();
+</script>
